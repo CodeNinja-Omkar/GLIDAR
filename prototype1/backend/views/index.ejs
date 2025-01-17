@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Circle</title>
+
+  <style>
+    #myCanvas {
+      background-color: rgba(0, 0, 0, 0.995);
+    }
+  </style>
+
+</head>
+
+<body>
+  <canvas id="myCanvas"></canvas>
+  <script>
+    // Get the canvas element and its context
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+
+// Resize canvas to fit the screen
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Calculate the center of the canvas
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+let angle = 0;
+const radii = [280, 240, 190, 150, 110, 80, 40];
+
+// Draw a circle
+function drawCircle(x, y, radius, fillColor, borderColor) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+// Draw a small gunshot circle
+function drawGunShotCircle(x, y) {
+    drawCircle(x, y, 8, '#FF0000', '#FF0000');
+}
+
+// Draw a line
+function drawLine(startX, startY, endX, endY) {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+// Draw a filled sweeping arc for radar effect
+function drawFilledArc(centerX, centerY, radius, startAngle, endAngle) {
+    const gradient = ctx.createRadialGradient(centerX, centerY, 50, centerX, centerY, radius);
+    gradient.addColorStop(0, 'rgba(50, 255, 50, 0.8)');
+    gradient.addColorStop(1, 'rgba(0, 255, 0, 0)');
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+}
+
+// Main animation loop
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw concentric circles
+    radii.forEach(radius => drawCircle(centerX, centerY, radius, '#000000', 'blue'));
+
+    // Draw crosshairs
+    drawLine(centerX, 0, centerX, canvas.height);
+    drawLine(0, centerY, canvas.width, centerY);
+
+    // Draw gunshot circle (for demo purposes, placed at static position)
+    drawGunShotCircle(400, 300);
+
+    // Draw radar sweeping effect
+    drawFilledArc(centerX, centerY, radii[0], angle, angle + Math.PI / 4);
+
+    // Increment angle for continuous rotation
+    angle = (angle + 0.02) % (Math.PI * 2);
+
+    window.requestAnimationFrame(animate);
+}
+
+// Start the animation
+animate();
+
+  </script>
+</body>
+
+</html>
